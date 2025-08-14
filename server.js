@@ -4,34 +4,9 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const net = require('net');
 
 // Criar instância do Express
 const app = express();
-
-// Função para verificar se uma porta está disponível
-function isPortAvailable(port) {
-    return new Promise((resolve) => {
-        const server = net.createServer();
-        server.listen(port, () => {
-            server.once('close', () => resolve(true));
-            server.close();
-        });
-        server.on('error', () => resolve(false));
-    });
-}
-
-// Função para encontrar uma porta disponível
-async function findAvailablePort(startPort) {
-    let port = startPort;
-    while (!(await isPortAvailable(port))) {
-        port++;
-        if (port > startPort + 100) {
-            throw new Error('Não foi possível encontrar uma porta disponível');
-        }
-    }
-    return port;
-}
 
 // Importar e executar migrações
 const { createTables, checkTables } = require('./migrations');
@@ -324,30 +299,28 @@ app.get('/api/health', (req, res) => {
 // Iniciar servidor
 async function startServer() {
     try {
-        const PORT = await findAvailablePort(3000);
+        // No Vercel, não precisamos iniciar o servidor manualmente
+        // Apenas inicializar o banco de dados
+        await initializeDatabase();
         
-        app.listen(PORT, () => {
-            console.log('🚀 Servidor iniciado com sucesso!');
-            console.log(`📍 Acesse: http://localhost:${PORT}`);
-            console.log(`🔧 API Health: http://localhost:${PORT}/api/health`);
-            console.log('📊 Banco de dados: PostgreSQL (NeonDB)');
-            console.log('✨ Sistema pronto para uso!');
-        });
+        console.log('🚀 Aplicação inicializada com sucesso!');
+        console.log('📊 Banco de dados: PostgreSQL (NeonDB)');
+        console.log('✨ Sistema pronto para uso no Vercel!');
     } catch (error) {
-        console.error('❌ Erro ao iniciar servidor:', error.message);
-        process.exit(1);
+        console.error('❌ Erro ao inicializar aplicação:', error.message);
+        // Não encerrar o processo no Vercel
     }
 }
 
-// Tratamento de erros não capturados
+// Tratamento de erros não capturados (não encerrar processo no Vercel)
 process.on('uncaughtException', (err) => {
     console.error('❌ Exceção não capturada:', err);
-    process.exit(1);
+    // Não encerrar o processo no Vercel
 });
 
 process.on('unhandledRejection', (reason, promise) => {
     console.error('❌ Promise rejeitada não tratada:', reason);
-    process.exit(1);
+    // Não encerrar o processo no Vercel
 });
 
 // Iniciar o servidor
