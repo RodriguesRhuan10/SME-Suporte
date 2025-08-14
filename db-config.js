@@ -11,8 +11,8 @@ const pool = new Pool({
     // Configurações otimizadas para Vercel
     max: 1, // Reduzir para Vercel (limite de conexões)
     min: 0, // Não manter conexões mínimas
-    idleTimeoutMillis: 3000, // Timeout reduzido para Vercel
-    connectionTimeoutMillis: 10000, // Timeout de conexão reduzido
+    idleTimeoutMillis: 2000, // Timeout reduzido para Vercel
+    connectionTimeoutMillis: 8000, // Timeout de conexão reduzido
     // Configurações específicas para NeonDB
     application_name: 'helpdesk-app-vercel'
 });
@@ -41,7 +41,7 @@ async function testConnection(retries = 2) {
         } catch (error) {
             console.error(`❌ Tentativa ${i + 1}/${retries} falhou:`, error.message);
             if (i < retries - 1) {
-                const delay = 500 * (i + 1);
+                const delay = 300 * (i + 1);
                 console.log(`⏳ Aguardando ${delay}ms antes da próxima tentativa...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
@@ -63,7 +63,7 @@ async function executeQuery(query, params = [], retries = 2) {
         } catch (error) {
             console.error(`❌ Query falhou (tentativa ${i + 1}/${retries}):`, error.message);
             if (i < retries - 1) {
-                const delay = 500 * (i + 1);
+                const delay = 300 * (i + 1);
                 console.log(`⏳ Aguardando ${delay}ms antes da próxima tentativa...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {

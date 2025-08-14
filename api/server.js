@@ -65,43 +65,41 @@ app.use((req, res, next) => {
     next();
 });
 
-// Inicializar banco de dados
-initializeDatabase().then(success => {
-    if (success) {
-        console.log('🚀 Aplicação pronta para uso!');
-        console.log('✅ Banco de dados: Conectado');
-    } else {
-        console.log('⚠️ Aplicação iniciada em modo offline');
-        console.log('⚠️ Banco de dados: Desconectado');
-        console.log('💡 A aplicação continuará funcionando, mas sem persistência de dados');
+// Inicializar banco de dados de forma assíncrona
+let dbInitPromise = null;
+
+function getDatabaseInitPromise() {
+    if (!dbInitPromise) {
+        dbInitPromise = initializeDatabase();
     }
-}).catch(error => {
-    console.error('❌ Erro na inicialização:', error);
-    console.log('⚠️ Aplicação iniciada em modo de emergência');
-});
+    return dbInitPromise;
+}
 
 // Criar ticket
 app.post('/api/tickets', async (req, res) => {
-    // Verificar se o banco está conectado
-    if (!isDatabaseConnected) {
-        return res.status(503).json({ 
-            error: 'Serviço temporariamente indisponível', 
-            message: 'Banco de dados não está conectado'
-        });
-    }
-    
-    const { title, description, requester, priority } = req.body;
-    
-    // Validação básica
-    if (!title || !description) {
-        return res.status(400).json({ error: 'Título e descrição são obrigatórios' });
-    }
-    
-    // Validar prioridade
-    const validPriorities = ['baixa', 'media', 'alta', 'urgente'];
-    const ticketPriority = priority && validPriorities.includes(priority) ? priority : 'media';
-    
     try {
+        // Aguardar inicialização do banco
+        await getDatabaseInitPromise();
+        
+        // Verificar se o banco está conectado
+        if (!isDatabaseConnected) {
+            return res.status(503).json({ 
+                error: 'Serviço temporariamente indisponível', 
+                message: 'Banco de dados não está conectado'
+            });
+        }
+        
+        const { title, description, requester, priority } = req.body;
+        
+        // Validação básica
+        if (!title || !description) {
+            return res.status(400).json({ error: 'Título e descrição são obrigatórios' });
+        }
+        
+        // Validar prioridade
+        const validPriorities = ['baixa', 'media', 'alta', 'urgente'];
+        const ticketPriority = priority && validPriorities.includes(priority) ? priority : 'media';
+        
         // Inserir ticket e retornar o ID
         const ticketResult = await executeQuery(
             `INSERT INTO tickets (title, description, requester, priority) VALUES ($1, $2, $3, $4) RETURNING id`,
@@ -125,15 +123,18 @@ app.post('/api/tickets', async (req, res) => {
 
 // Listar tickets
 app.get('/api/tickets', async (req, res) => {
-    // Verificar se o banco está conectado
-    if (!isDatabaseConnected) {
-        return res.status(503).json({ 
-            error: 'Serviço temporariamente indisponível', 
-            message: 'Banco de dados não está conectado'
-        });
-    }
-    
     try {
+        // Aguardar inicialização do banco
+        await getDatabaseInitPromise();
+        
+        // Verificar se o banco está conectado
+        if (!isDatabaseConnected) {
+            return res.status(503).json({ 
+                error: 'Serviço temporariamente indisponível', 
+                message: 'Banco de dados não está conectado'
+            });
+        }
+        
         const result = await executeQuery(
             `SELECT * FROM tickets ORDER BY created_at DESC`
         );
@@ -146,20 +147,23 @@ app.get('/api/tickets', async (req, res) => {
 
 // Obter ticket por ID
 app.get('/api/tickets/:id', async (req, res) => {
-    // Verificar se o banco está conectado
-    if (!isDatabaseConnected) {
-        return res.status(503).json({ 
-            error: 'Serviço temporariamente indisponível', 
-            message: 'Banco de dados não está conectado'
-        });
-    }
-    
-    const ticketId = req.params.id;
-    if (!ticketId || isNaN(ticketId)) {
-        return res.status(400).json({ error: 'ID do ticket inválido' });
-    }
-    
     try {
+        // Aguardar inicialização do banco
+        await getDatabaseInitPromise();
+        
+        // Verificar se o banco está conectado
+        if (!isDatabaseConnected) {
+            return res.status(503).json({ 
+                error: 'Serviço temporariamente indisponível', 
+                message: 'Banco de dados não está conectado'
+            });
+        }
+        
+        const ticketId = req.params.id;
+        if (!ticketId || isNaN(ticketId)) {
+            return res.status(400).json({ error: 'ID do ticket inválido' });
+        }
+        
         const result = await executeQuery(
             `SELECT * FROM tickets WHERE id = $1`,
             [ticketId]
@@ -178,26 +182,29 @@ app.get('/api/tickets/:id', async (req, res) => {
 
 // Adicionar log
 app.post('/api/tickets/:id/logs', async (req, res) => {
-    // Verificar se o banco está conectado
-    if (!isDatabaseConnected) {
-        return res.status(503).json({ 
-            error: 'Serviço temporariamente indisponível', 
-            message: 'Banco de dados não está conectado'
-        });
-    }
-    
-    const ticketId = req.params.id;
-    const { message } = req.body;
-    
-    if (!message) {
-        return res.status(400).json({ error: 'Mensagem é obrigatória' });
-    }
-    
-    if (!ticketId || isNaN(ticketId)) {
-        return res.status(400).json({ error: 'ID do ticket inválido' });
-    }
-    
     try {
+        // Aguardar inicialização do banco
+        await getDatabaseInitPromise();
+        
+        // Verificar se o banco está conectado
+        if (!isDatabaseConnected) {
+            return res.status(503).json({ 
+                error: 'Serviço temporariamente indisponível', 
+                message: 'Banco de dados não está conectado'
+            });
+        }
+        
+        const ticketId = req.params.id;
+        const { message } = req.body;
+        
+        if (!message) {
+            return res.status(400).json({ error: 'Mensagem é obrigatória' });
+        }
+        
+        if (!ticketId || isNaN(ticketId)) {
+            return res.status(400).json({ error: 'ID do ticket inválido' });
+        }
+        
         const result = await executeQuery(
             `INSERT INTO logs (ticket_id, message) VALUES ($1, $2) RETURNING id`,
             [ticketId, message]
@@ -212,21 +219,24 @@ app.post('/api/tickets/:id/logs', async (req, res) => {
 
 // Obter logs de um ticket
 app.get('/api/tickets/:id/logs', async (req, res) => {
-    // Verificar se o banco está conectado
-    if (!isDatabaseConnected) {
-        return res.status(503).json({ 
-            error: 'Serviço temporariamente indisponível', 
-            message: 'Banco de dados não está conectado'
-        });
-    }
-    
-    const ticketId = req.params.id;
-    
-    if (!ticketId || isNaN(ticketId)) {
-        return res.status(400).json({ error: 'ID do ticket inválido' });
-    }
-    
     try {
+        // Aguardar inicialização do banco
+        await getDatabaseInitPromise();
+        
+        // Verificar se o banco está conectado
+        if (!isDatabaseConnected) {
+            return res.status(503).json({ 
+                error: 'Serviço temporariamente indisponível', 
+                message: 'Banco de dados não está conectado'
+            });
+        }
+        
+        const ticketId = req.params.id;
+        
+        if (!ticketId || isNaN(ticketId)) {
+            return res.status(400).json({ error: 'ID do ticket inválido' });
+        }
+        
         const result = await executeQuery(
             `SELECT * FROM logs WHERE ticket_id = $1 ORDER BY created_at ASC`,
             [ticketId]
@@ -241,31 +251,34 @@ app.get('/api/tickets/:id/logs', async (req, res) => {
 
 // Atualizar status
 app.put('/api/tickets/:id/status', async (req, res) => {
-    // Verificar se o banco está conectado
-    if (!isDatabaseConnected) {
-        return res.status(503).json({ 
-            error: 'Serviço temporariamente indisponível', 
-            message: 'Banco de dados não está conectado'
-        });
-    }
-    
-    const ticketId = req.params.id;
-    const { status } = req.body;
-    
-    if (!status) {
-        return res.status(400).json({ error: 'Status é obrigatório' });
-    }
-    
-    if (!ticketId || isNaN(ticketId)) {
-        return res.status(400).json({ error: 'ID do ticket inválido' });
-    }
-    
-    const statusValidos = ['aberto', 'em_andamento', 'resolvido', 'fechado'];
-    if (!statusValidos.includes(status)) {
-        return res.status(400).json({ error: 'Status inválido. Use: aberto, em_andamento, resolvido, fechado' });
-    }
-    
     try {
+        // Aguardar inicialização do banco
+        await getDatabaseInitPromise();
+        
+        // Verificar se o banco está conectado
+        if (!isDatabaseConnected) {
+            return res.status(503).json({ 
+                error: 'Serviço temporariamente indisponível', 
+                message: 'Banco de dados não está conectado'
+            });
+        }
+        
+        const ticketId = req.params.id;
+        const { status } = req.body;
+        
+        if (!status) {
+            return res.status(400).json({ error: 'Status é obrigatório' });
+        }
+        
+        if (!ticketId || isNaN(ticketId)) {
+            return res.status(400).json({ error: 'ID do ticket inválido' });
+        }
+        
+        const statusValidos = ['aberto', 'em_andamento', 'resolvido', 'fechado'];
+        if (!statusValidos.includes(status)) {
+            return res.status(400).json({ error: 'Status inválido. Use: aberto, em_andamento, resolvido, fechado' });
+        }
+        
         const result = await executeQuery(
             `UPDATE tickets SET status = $1 WHERE id = $2`,
             [status, ticketId]
@@ -290,17 +303,20 @@ app.put('/api/tickets/:id/status', async (req, res) => {
 
 // Rota para excluir um ticket
 app.delete('/api/tickets/:id', async (req, res) => {
-    // Verificar se o banco está conectado
-    if (!isDatabaseConnected) {
-        return res.status(503).json({ 
-            error: 'Serviço temporariamente indisponível', 
-            message: 'Banco de dados não está conectado'
-        });
-    }
-    
-    const ticketId = req.params.id;
-    
     try {
+        // Aguardar inicialização do banco
+        await getDatabaseInitPromise();
+        
+        // Verificar se o banco está conectado
+        if (!isDatabaseConnected) {
+            return res.status(503).json({ 
+                error: 'Serviço temporariamente indisponível', 
+                message: 'Banco de dados não está conectado'
+            });
+        }
+        
+        const ticketId = req.params.id;
+        
         const result = await executeQuery(
             'DELETE FROM tickets WHERE id = $1',
             [ticketId]
@@ -332,13 +348,41 @@ app.use((err, req, res, next) => {
 });
 
 // Rota para verificar status da API
-app.get('/api/health', (req, res) => {
-    res.json({ 
-        status: 'OK', 
-        timestamp: new Date().toISOString(),
-        database: isDatabaseConnected ? 'connected' : 'disconnected',
-        databaseStatus: isDatabaseConnected
-    });
+app.get('/api/health', async (req, res) => {
+    try {
+        // Aguardar inicialização do banco
+        await getDatabaseInitPromise();
+        
+        res.json({ 
+            status: 'OK', 
+            timestamp: new Date().toISOString(),
+            database: isDatabaseConnected ? 'connected' : 'disconnected',
+            databaseStatus: isDatabaseConnected
+        });
+    } catch (error) {
+        res.json({ 
+            status: 'ERROR', 
+            timestamp: new Date().toISOString(),
+            database: 'disconnected',
+            databaseStatus: false,
+            error: error.message
+        });
+    }
+});
+
+// Inicializar banco de dados em background
+getDatabaseInitPromise().then(success => {
+    if (success) {
+        console.log('🚀 Aplicação pronta para uso!');
+        console.log('✅ Banco de dados: Conectado');
+    } else {
+        console.log('⚠️ Aplicação iniciada em modo offline');
+        console.log('⚠️ Banco de dados: Desconectado');
+        console.log('💡 A aplicação continuará funcionando, mas sem persistência de dados');
+    }
+}).catch(error => {
+    console.error('❌ Erro na inicialização:', error);
+    console.log('⚠️ Aplicação iniciada em modo de emergência');
 });
 
 // Exportar para Vercel
