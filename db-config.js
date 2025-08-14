@@ -1,22 +1,25 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Configuração otimizada do pool de conexões para NeonDB
+// Configuração otimizada do pool de conexões para NeonDB e Vercel
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-    max: 5, // NeonDB funciona melhor com menos conexões
-    idleTimeoutMillis: 10000, // Timeout reduzido para NeonDB
-    connectionTimeoutMillis: 10000, // Timeout de conexão aumentado
-    query_timeout: 30000, // Timeout para queries
-    statement_timeout: 30000, // Timeout para statements
-    // Configurações específicas para NeonDB
-    application_name: 'helpdesk-app',
-    // Configurações de SSL para NeonDB
     ssl: {
         rejectUnauthorized: false,
         sslmode: 'require'
-    }
+    },
+    // Configurações otimizadas para Vercel
+    max: 2, // Reduzir para Vercel (limite de conexões)
+    min: 0, // Não manter conexões mínimas
+    idleTimeoutMillis: 5000, // Timeout reduzido para Vercel
+    connectionTimeoutMillis: 15000, // Timeout de conexão aumentado
+    query_timeout: 30000, // Timeout para queries
+    statement_timeout: 30000, // Timeout para statements
+    // Configurações específicas para NeonDB
+    application_name: 'helpdesk-app-vercel',
+    // Configurações de retry
+    retryDelay: 1000,
+    maxRetries: 3
 });
 
 // Testar conexão
@@ -27,20 +30,62 @@ pool.on('connect', () => {
 pool.on('error', (err) => {
     console.error('❌ Erro no pool de conexões PostgreSQL:', err);
     // Não encerrar o processo em caso de erro de conexão
-    // process.exit(-1);
 });
 
-// Função para testar conexão
-async function testConnection() {
-    try {
-        const client = await pool.connect();
-        console.log('✅ Teste de conexão bem-sucedido');
-        client.release();
-        return true;
-    } catch (error) {
-        console.error('❌ Erro no teste de conexão:', error.message);
-        return false;
+// Função para testar conexão com retry
+async function testConnection(retries = 3) {
+    console.log(`🔍 Testando conexão com o banco de dados (${retries} tentativas)...`);
+    
+    for (let i = 0; i < retries; i++) {
+        try {
+            console.log(`🔌 Tentativa ${i + 1}/${retries} de conexão...`);
+            const client = await pool.connect();
+            console.log('✅ Teste de conexão bem-sucedido');
+            client.release();
+            return true;
+        } catch (error) {
+            console.error(`❌ Tentativa ${i + 1}/${retries} falhou:`, error.message);
+            if (i < retries - 1) {
+                const delay = 1000 * (i + 1);
+                console.log(`⏳ Aguardando ${delay}ms antes da próxima tentativa...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+                console.error(`💥 Todas as tentativas de conexão falharam`);
+            }
+        }
+    }
+    return false;
+}
+
+// Função para executar query com retry
+async function executeQuery(query, params = [], retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            console.log(`🔍 Executando query (tentativa ${i + 1}/${retries})`);
+            const result = await pool.query(query, params);
+            console.log(`✅ Query executada com sucesso`);
+            return result;
+        } catch (error) {
+            console.error(`❌ Query falhou (tentativa ${i + 1}/${retries}):`, error.message);
+            if (i < retries - 1) {
+                console.log(`⏳ Aguardando ${1000 * (i + 1)}ms antes da próxima tentativa...`);
+                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+            } else {
+                console.error(`💥 Todas as tentativas falharam. Último erro:`, error.message);
+                throw error;
+            }
+        }
     }
 }
 
-module.exports = { pool, testConnection };
+// Função para fechar pool de forma segura
+async function closePool() {
+    try {
+        await pool.end();
+        console.log('✅ Pool de conexões fechado com sucesso');
+    } catch (error) {
+        console.error('❌ Erro ao fechar pool:', error);
+    }
+}
+
+module.exports = { pool, testConnection, executeQuery, closePool };

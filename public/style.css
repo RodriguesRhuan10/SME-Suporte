@@ -72,44 +72,34 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Container Principal */
-.app-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+/* Header Simples */
+.simple-header {
+    background: #033303 !important;
+    color: var(--white) !important;
+    padding: var(--spacing-6) 0 !important;
+    box-shadow: var(--shadow-lg) !important;
+    position: static !important;
+    width: 100% !important;
+    border-bottom: 3px solid var(--primary-light) !important;
+    display: block !important;
+    margin: 0 !important;
 }
 
-/* Header */
-.header {
-    background: #043104;
-    color: var(--white);
-    padding: var(--spacing-6) 0;
-    box-shadow: var(--shadow-lg);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+.header-container {
+    max-width: 1000px !important;
+    margin: 0 auto !important;
+    padding: 0 var(--spacing-4) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: var(--spacing-6) !important;
+    text-align: center !important;
+    width: 100% !important;
 }
 
-.header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-6);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-6);
-}
-
-.logo-section {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-4);
-    flex-shrink: 0;
-}
-
-.logo {
-    width: 70px;
-    height: 70px;
+.header-logo {
+    width: 60px;
+    height: 60px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     display: flex;
@@ -118,146 +108,243 @@ body {
     backdrop-filter: blur(10px);
     border: 3px solid rgba(255, 255, 255, 0.3);
     overflow: hidden;
+    flex-shrink: 0;
 }
 
-.logo-image {
+.header-logo-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    transition: all 0.3s ease;
 }
 
-.logo:hover .logo-image {
-    transform: scale(1.05);
-}
-
-.institution-info h1 {
-    font-size: var(--font-size-2xl);
-    font-weight: 700;
-    margin-bottom: var(--spacing-1);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.institution-info h2 {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    margin-bottom: var(--spacing-1);
-    opacity: 0.9;
-}
-
-.institution-info p {
-    font-size: var(--font-size-sm);
-    opacity: 0.8;
-    font-weight: 400;
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-6);
-}
-
-.system-info {
-    display: flex;
-    gap: var(--spacing-4);
-    align-items: center;
-}
-
-.status-indicator {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    padding: var(--spacing-2) var(--spacing-3);
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
-    text-align: center;
-    white-space: nowrap;
-}
-
-.status-indicator i {
-    color: #10b981;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-.service-status-indicator {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    padding: var(--spacing-2) var(--spacing-3);
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
-    text-align: center;
-    white-space: nowrap;
-}
-
-.service-status-indicator.active i {
-    color: #10b981 !important;
-}
-
-.service-status-indicator.inactive i {
-    color: #ef4444 !important;
-}
-
-.developer-credit {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-2) var(--spacing-3);
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
-    font-size: var(--font-size-xs);
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 500;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.credit-text {
-    font-size: var(--font-size-xs);
-    line-height: 1.2;
-}
-
-.copyright {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
-    margin-left: var(--spacing-1);
-}
-
-.status-indicator, .service-status-indicator {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-2) var(--spacing-3);
-    border-radius: var(--border-radius);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+.header-title h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: 800;
+    margin-bottom: var(--spacing-2);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     color: var(--white);
 }
 
-.status-indicator i {
-    color: #10b981 !important;
-    animation: pulse 2s infinite;
+.header-title p {
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    opacity: 0.9;
+    color: var(--white);
+    margin: 0;
 }
+
+/* Container Principal */
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Forçar estilos do header */
+body .simple-header,
+html .simple-header,
+.app-container .simple-header {
+    background: #033303 !important;
+    color: var(--white) !important;
+    padding: var(--spacing-6) 0 !important;
+    box-shadow: var(--shadow-lg) !important;
+    position: static !important;
+    width: 100% !important;
+    border-bottom: 3px solid var(--primary-light) !important;
+    display: block !important;
+    margin: 0 !important;
+}
+
+/* Animação para os indicadores de status */
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.7; 
+        transform: scale(1.1);
+    }
+}
+
+/* Responsividade do Header */
+@media (max-width: 768px) {
+    .desktop-header {
+        display: none !important;
+    }
+    
+    .mobile-header {
+        display: flex !important;
+    }
+    
+    .simple-header {
+        padding: 20px 0 !important;
+    }
+    
+    /* Garantir que o texto de créditos seja responsivo */
+    .mobile-header > div:last-child {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        text-align: center !important;
+        padding: 0 16px !important;
+    }
+    
+    /* Estilos específicos para mobile credits */
+    .mobile-header .mobile-credits {
+        white-space: normal !important;
+        line-height: 1.4 !important;
+    }
+    
+    .mobile-header .mobile-credits span {
+        display: block !important;
+        line-height: 1.3 !important;
+        margin-bottom: 2px !important;
+    }
+}
+
+/* Responsividade adicional para telas muito pequenas */
+@media (max-width: 480px) {
+    .mobile-header > div:last-child {
+        font-size: 0.65rem !important;
+        line-height: 1.4 !important;
+        padding: 0 12px !important;
+    }
+    
+    .desktop-header > div:last-child > div {
+        font-size: 0.7rem !important;
+        line-height: 1.3 !important;
+        max-width: 200px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    /* Ajustes específicos para mobile credits em telas muito pequenas */
+    .mobile-header .mobile-credits {
+        font-size: 0.65rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    .mobile-header .mobile-credits span {
+        font-size: 0.65rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 3px !important;
+    }
+}
+
+/* Quebra de linha responsiva para créditos */
+@media (max-width: 1200px) {
+    .desktop-credits {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .desktop-credits {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 250px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .desktop-credits {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 200px !important;
+    }
+}
+
+/* Estilos específicos para mobile credits */
+.mobile-credits {
+    white-space: normal !important;
+    line-height: 1.4 !important;
+}
+
+.mobile-credits span {
+    display: block !important;
+    line-height: 1.3 !important;
+    margin-bottom: 2px !important;
+}
+
+@media (min-width: 769px) {
+    .desktop-header {
+        display: flex !important;
+    }
+    
+    .mobile-header {
+        display: none !important;
+    }
+}
+
+body .header-container,
+html .header-container,
+.app-container .header-container {
+    max-width: 1000px !important;
+    margin: 0 auto !important;
+    padding: 0 var(--spacing-4) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: var(--spacing-6) !important;
+    text-align: center !important;
+    width: 100% !important;
+}
+
+/* Regra mais específica para garantir */
+.simple-header {
+    background: #033303 !important;
+    color: var(--white) !important;
+    padding: var(--spacing-6) 0 !important;
+    box-shadow: var(--shadow-lg) !important;
+    position: static !important;
+    width: 100% !important;
+    border-bottom: 3px solid var(--primary-light) !important;
+    display: block !important;
+    margin: 0 !important;
+    z-index: 1 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .service-status-indicator i {
     transition: color 0.3s ease;
@@ -297,12 +384,13 @@ body {
 .main-content {
     flex: 1;
     padding: var(--spacing-8) 0;
+    min-height: calc(100vh - 200px); /* Garantir altura mínima considerando o header */
 }
 
 .content-wrapper {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
-    padding: 0 var(--spacing-6);
+    padding: 0 var(--spacing-4);
 }
 
 /* Seções */
@@ -1058,33 +1146,258 @@ body {
     to { transform: translateX(100%); opacity: 0; }
 }
 
-/* Responsividade */
+/* Responsividade do Header Simples */
 @media (max-width: 768px) {
-    .header-content {
+    .simple-header {
+        padding: var(--spacing-4) 0;
+    }
+    
+    .header-container {
         flex-direction: column;
         gap: var(--spacing-4);
         text-align: center;
+        padding: 0 var(--spacing-3);
     }
     
-    .logo-section {
-        flex-direction: column;
+    .header-logo {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .header-title h1 {
+        font-size: var(--font-size-2xl);
+        line-height: 1.3;
+    }
+    
+    .header-title p {
+        font-size: var(--font-size-base);
+        line-height: 1.3;
+    }
+}
+    
+    /* Ajustes para conteúdo principal */
+    .main-content {
+        padding: var(--spacing-6) 0;
+    }
+    
+    .content-wrapper {
+        padding: 0 var(--spacing-4);
+    }
+    
+    /* Ajustes para formulário */
+    .ticket-form {
+        padding: var(--spacing-4);
+    }
+    
+    .form-row {
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-4);
+    }
+    
+    /* Ajustes para botões */
+    .btn-primary, .btn-secondary {
+        padding: var(--spacing-3) var(--spacing-5);
+    }
+    
+    /* Ajustes para seções */
+    .form-section, .tickets-section {
+        margin-bottom: var(--spacing-6);
+    }
+    
+    .section-header {
+        padding: var(--spacing-4);
+    }
+
+
+/* Responsividade para celulares pequenos */
+@media (max-width: 480px) {
+    .simple-header {
+        padding: var(--spacing-3) 0;
+    }
+    
+    .header-container {
+        padding: 0 var(--spacing-2);
         gap: var(--spacing-3);
     }
     
-    .header-actions {
-        flex-direction: column;
-        gap: var(--spacing-3);
-        align-items: center;
+    .header-logo {
+        width: 50px;
+        height: 50px;
     }
     
-    .system-info {
+    .header-title h1 {
+        font-size: var(--font-size-lg);
+        line-height: 1.2;
+    }
+    
+    .header-title p {
+        font-size: var(--font-size-sm);
+        line-height: 1.2;
+    }
+    
+    /* Ajustes para conteúdo principal */
+    .main-content {
+        padding: var(--spacing-4) 0;
+    }
+    
+    .content-wrapper {
+        padding: 0 var(--spacing-2);
+    }
+    
+    /* Ajustes para formulário */
+    .ticket-form {
+        padding: var(--spacing-3);
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-3);
+        margin-bottom: var(--spacing-3);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: var(--spacing-2) var(--spacing-3);
+        font-size: 16px; /* Evita zoom no iOS */
+    }
+    
+    .form-group textarea {
+        min-height: 80px;
+    }
+    
+    /* Ajustes para botões */
+    .btn-primary, .btn-secondary {
+        padding: var(--spacing-2) var(--spacing-4);
+        font-size: var(--font-size-sm);
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Ajustes para seções */
+    .form-section, .tickets-section {
+        margin-bottom: var(--spacing-4);
+        border-radius: var(--border-radius);
+    }
+    
+    .section-header {
+        padding: var(--spacing-3);
+        margin-bottom: var(--spacing-3);
+    }
+    
+    .section-header h2 {
+        font-size: var(--font-size-base);
+        margin-bottom: var(--spacing-2);
+    }
+    
+    /* Ajustes para cards de tickets */
+    .ticket-card {
+        padding: var(--spacing-3);
+        margin-bottom: var(--spacing-3);
+    }
+    
+    .ticket-card h3 {
+        font-size: var(--font-size-base);
+    }
+    
+    .ticket-meta {
+        font-size: var(--font-size-xs);
+    }
+    
+    /* Ajustes para modais */
+    .modal-content {
+        margin: 10px;
+        max-width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+    }
+    
+    .modal-header {
+        padding: var(--spacing-3);
+    }
+    
+    .modal-body {
+        padding: var(--spacing-3);
+    }
+    
+    .modal-footer {
+        padding: var(--spacing-3);
         flex-direction: column;
         gap: var(--spacing-2);
     }
     
-    .developer-credit {
-        text-align: center;
-        white-space: normal;
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
+
+/* Responsividade para celulares muito pequenos */
+@media (max-width: 360px) {
+    .header {
+        /* Melhorar performance da animação no mobile */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+    
+    .header-content {
+        padding: 0 var(--spacing-1);
+        gap: var(--spacing-1);
+    }
+    
+    .logo {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .institution-info h1 {
+        font-size: var(--font-size-sm);
+    }
+    
+    .institution-info h2 {
+        font-size: var(--font-size-xs);
+    }
+    
+    .institution-info p {
+        font-size: 0.65rem;
+    }
+    
+    .status-indicator,
+    .service-status-indicator {
+        min-width: 80px;
+        font-size: 0.65rem;
+        padding: var(--spacing-1);
+    }
+    
+    .content-wrapper {
+        padding: 0 var(--spacing-1);
+    }
+    
+    .ticket-form {
+        padding: var(--spacing-2);
+    }
+    
+    .form-row {
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-2);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: var(--spacing-1) var(--spacing-2);
+        font-size: 14px;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: var(--spacing-1) var(--spacing-3);
+        font-size: 0.8rem;
+    }
+    
+    .section-header {
+        padding: var(--spacing-2);
+    }
+    
+    .ticket-card {
+        padding: var(--spacing-2);
     }
 }
 
@@ -1300,6 +1613,22 @@ body {
     
     .status-actions button {
         width: 100%;
+    }
+    
+    /* Melhorias para rolagem no mobile */
+    .status-modal .modal-body {
+        max-height: 75vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 20px !important;
+    }
+    
+    .status-options-grid {
+        gap: var(--spacing-3) !important;
+    }
+    
+    .status-option {
+        padding: var(--spacing-3) !important;
     }
 }
 
@@ -2036,4 +2365,113 @@ body {
         font-size: var(--font-size-xs);
         padding: var(--spacing-2);
     }
+}
+
+/* Status dos Serviços no Header */
+.service-status-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    align-items: flex-end;
+}
+
+.service-status-container.mobile {
+    align-items: center;
+    margin-bottom: var(--spacing-2);
+}
+
+.service-status-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.service-status-item:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.service-status-item.online {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.status-indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.service-status-item.online .status-indicator-dot {
+    background: #10b981;
+    animation: pulse 2s infinite;
+}
+
+.service-status-item span {
+    font-size: var(--font-size-xs);
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+
+
+
+/* Animação de pulse para o indicador online */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+}
+
+/* Responsividade para os status dos serviços */
+@media (max-width: 768px) {
+    .service-status-container {
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-3);
+    }
+    
+    .service-status-item {
+        padding: var(--spacing-2) var(--spacing-4);
+        gap: var(--spacing-3);
+    }
+    
+    .service-status-item span {
+        font-size: var(--font-size-sm);
+    }
+    
+
+}
+
+@media (max-width: 480px) {
+    .service-status-container {
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-2);
+    }
+    
+    .service-status-item {
+        padding: var(--spacing-2) var(--spacing-3);
+        gap: var(--spacing-2);
+    }
+    
+    .service-status-item span {
+        font-size: var(--font-size-xs);
+    }
+    
+
 }

@@ -1,5 +1,5 @@
 const express = require('express');
-const { pool } = require('./db-config');
+const { pool, testConnection, executeQuery } = require('./db-config');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
@@ -36,24 +36,85 @@ async function findAvailablePort(startPort) {
 // Importar e executar migrações
 const { createTables, checkTables } = require('./migrations');
 
+// Variável global para status do banco
+let isDatabaseConnected = false;
+
 // Função para inicializar o banco de dados
 async function initializeDatabase() {
     try {
+        console.log('🔄 Inicializando banco de dados...');
+        
+        // Testar conexão primeiro
+        const isConnected = await testConnection();
+        if (!isConnected) {
+            console.error('❌ Falha na conexão com o banco de dados');
+            isDatabaseConnected = false;
+            return false;
+        }
+        
         await createTables();
         await checkTables();
         console.log('✅ Banco de dados PostgreSQL inicializado com sucesso!');
+        isDatabaseConnected = true;
+        return true;
     } catch (error) {
         console.error('❌ Erro ao inicializar banco de dados:', error);
-        process.exit(1);
+        isDatabaseConnected = false;
+        return false;
     }
 }
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Middleware para verificar status do banco
+app.use('/api', (req, res, next) => {
+    if (req.method === 'GET' && req.path === '/health') {
+        return next(); // Permitir acesso ao health check
+    }
+    
+    if (!isDatabaseConnected) {
+        return res.status(503).json({ 
+            error: 'Serviço temporariamente indisponível', 
+            message: 'Banco de dados não está conectado',
+            retryAfter: 30
+        });
+    }
+    
+    next();
+});
+
+// Configuração de cache para arquivos estáticos
+app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: '1d', // Cache por 1 dia
+    etag: true,   // ETags para validação
+    lastModified: true
+}));
+
+// Headers adicionais para evitar problemas de cache
+app.use((req, res, next) => {
+    // Para arquivos CSS e JS
+    if (req.url.endsWith('.css') || req.url.endsWith('.js')) {
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 horas
+        res.setHeader('Vary', 'Accept-Encoding');
+    }
+    next();
+});
 
 // Inicializar banco de dados
-initializeDatabase();
+initializeDatabase().then(success => {
+    if (success) {
+        console.log('🚀 Aplicação pronta para uso!');
+        console.log('✅ Banco de dados: Conectado');
+    } else {
+        console.log('⚠️ Aplicação iniciada em modo offline');
+        console.log('⚠️ Banco de dados: Desconectado');
+        console.log('💡 A aplicação continuará funcionando, mas sem persistência de dados');
+    }
+}).catch(error => {
+    console.error('❌ Erro na inicialização:', error);
+    console.log('⚠️ Aplicação iniciada em modo de emergência');
+});
 
 // Criar ticket
 app.post('/api/tickets', async (req, res) => {
@@ -70,7 +131,7 @@ app.post('/api/tickets', async (req, res) => {
     
     try {
         // Inserir ticket e retornar o ID
-        const ticketResult = await pool.query(
+        const ticketResult = await executeQuery(
             `INSERT INTO tickets (title, description, requester, priority) VALUES ($1, $2, $3, $4) RETURNING id`,
             [title, description, requester, ticketPriority]
         );
@@ -78,7 +139,7 @@ app.post('/api/tickets', async (req, res) => {
         const ticketId = ticketResult.rows[0].id;
         
         // Inserir log
-        await pool.query(
+        await executeQuery(
             `INSERT INTO logs (ticket_id, message) VALUES ($1, $2)`,
             [ticketId, 'Chamado criado']
         );
@@ -93,7 +154,7 @@ app.post('/api/tickets', async (req, res) => {
 // Listar tickets
 app.get('/api/tickets', async (req, res) => {
     try {
-        const result = await pool.query(
+        const result = await executeQuery(
             `SELECT * FROM tickets ORDER BY created_at DESC`
         );
         res.json(result.rows);
@@ -111,7 +172,7 @@ app.get('/api/tickets/:id', async (req, res) => {
     }
     
     try {
-        const result = await pool.query(
+        const result = await executeQuery(
             `SELECT * FROM tickets WHERE id = $1`,
             [ticketId]
         );
@@ -141,7 +202,7 @@ app.post('/api/tickets/:id/logs', async (req, res) => {
     }
     
     try {
-        const result = await pool.query(
+        const result = await executeQuery(
             `INSERT INTO logs (ticket_id, message) VALUES ($1, $2) RETURNING id`,
             [ticketId, message]
         );
@@ -162,7 +223,7 @@ app.get('/api/tickets/:id/logs', async (req, res) => {
     }
     
     try {
-        const result = await pool.query(
+        const result = await executeQuery(
             `SELECT * FROM logs WHERE ticket_id = $1 ORDER BY created_at ASC`,
             [ticketId]
         );
@@ -193,7 +254,7 @@ app.put('/api/tickets/:id/status', async (req, res) => {
     }
     
     try {
-        const result = await pool.query(
+        const result = await executeQuery(
             `UPDATE tickets SET status = $1 WHERE id = $2`,
             [status, ticketId]
         );
@@ -203,7 +264,7 @@ app.put('/api/tickets/:id/status', async (req, res) => {
         }
         
         // Inserir log
-        await pool.query(
+        await executeQuery(
             `INSERT INTO logs (ticket_id, message) VALUES ($1, $2)`,
             [ticketId, `Status alterado para ${status}`]
         );
@@ -220,7 +281,7 @@ app.delete('/api/tickets/:id', async (req, res) => {
     const ticketId = req.params.id;
     
     try {
-        const result = await pool.query(
+        const result = await executeQuery(
             'DELETE FROM tickets WHERE id = $1',
             [ticketId]
         );
@@ -255,7 +316,8 @@ app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         timestamp: new Date().toISOString(),
-        database: 'connected'
+        database: isDatabaseConnected ? 'connected' : 'disconnected',
+        databaseStatus: isDatabaseConnected
     });
 });
 
@@ -268,7 +330,7 @@ async function startServer() {
             console.log('🚀 Servidor iniciado com sucesso!');
             console.log(`📍 Acesse: http://localhost:${PORT}`);
             console.log(`🔧 API Health: http://localhost:${PORT}/api/health`);
-            console.log('📊 Banco de dados: SQLite');
+            console.log('📊 Banco de dados: PostgreSQL (NeonDB)');
             console.log('✨ Sistema pronto para uso!');
         });
     } catch (error) {

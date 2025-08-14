@@ -1,12 +1,18 @@
-const { pool } = require('./db-config');
+const { executeQuery, testConnection } = require('./db-config');
 
 // Função para criar as tabelas no PostgreSQL
 async function createTables() {
     try {
         console.log('🔄 Criando tabelas no PostgreSQL...');
         
+        // Testar conexão primeiro
+        const isConnected = await testConnection();
+        if (!isConnected) {
+            throw new Error('Não foi possível conectar ao banco de dados após várias tentativas');
+        }
+        
         // Criar tabela tickets
-        await pool.query(`
+        await executeQuery(`
             CREATE TABLE IF NOT EXISTS tickets (
                 id SERIAL PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
@@ -20,7 +26,7 @@ async function createTables() {
         console.log('✅ Tabela tickets criada/verificada');
         
         // Criar tabela logs
-        await pool.query(`
+        await executeQuery(`
             CREATE TABLE IF NOT EXISTS logs (
                 id SERIAL PRIMARY KEY,
                 ticket_id INTEGER REFERENCES tickets(id) ON DELETE CASCADE,
@@ -31,7 +37,7 @@ async function createTables() {
         console.log('✅ Tabela logs criada/verificada');
         
         // Criar índices para melhor performance
-        await pool.query(`
+        await executeQuery(`
             CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status);
             CREATE INDEX IF NOT EXISTS idx_tickets_priority ON tickets(priority);
             CREATE INDEX IF NOT EXISTS idx_tickets_created_at ON tickets(created_at);
@@ -50,11 +56,11 @@ async function createTables() {
 // Função para verificar se as tabelas existem
 async function checkTables() {
     try {
-        const ticketsResult = await pool.query(`
+        const ticketsResult = await executeQuery(`
             SELECT COUNT(*) as count FROM tickets
         `);
         
-        const logsResult = await pool.query(`
+        const logsResult = await executeQuery(`
             SELECT COUNT(*) as count FROM logs
         `);
         

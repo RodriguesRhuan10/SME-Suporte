@@ -8,15 +8,18 @@ const modal = document.getElementById('ticketModal');
 // Senha de acesso (você pode alterar para a senha desejada)
 const ACCESS_PASSWORD = 'cpdpmisme';
 
+
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
-    startServiceStatusTimer(); // Inicializar status do serviço
     setupStatusOptions(); // Configurar opções de status
     
     // Sempre mostrar tela de acesso ao carregar a página
     isAuthenticated = false;
     hideTicketsSection();
+    
+
 });
 
 function setupEventListeners() {
@@ -674,57 +677,11 @@ function getNotificationIcon(type) {
     return icons[type] || icons.info;
 }
 
-// Função para verificar se o serviço está ativo baseado no horário
-function checkServiceStatus() {
-    console.log('🔍 Verificando status do serviço...');
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const currentTime = currentHour * 100 + currentMinute;
-    
-    console.log('⏰ Horário atual:', currentHour + ':' + currentMinute.toString().padStart(2, '0'));
-    console.log('📊 Tempo em formato numérico:', currentTime);
-    
-    // Serviço ativo: 08:00 até 17:00
-    // Serviço inativo: 17:01 até 07:59
-    const isActive = (currentTime >= 800 && currentTime <= 1700);
-    
-    console.log('✅ Serviço ativo?', isActive);
-    
-    const serviceStatusIndicator = document.getElementById('serviceStatusIndicator');
-    const serviceStatusIcon = document.getElementById('serviceStatusIcon');
-    const serviceStatusText = document.getElementById('serviceStatusText');
-    
-    if (!serviceStatusIndicator || !serviceStatusIcon || !serviceStatusText) {
-        console.error('❌ Elementos do status não encontrados!');
-        return;
-    }
-    
-    if (isActive) {
-        serviceStatusIndicator.classList.remove('inactive');
-        serviceStatusIndicator.classList.add('active');
-        serviceStatusText.textContent = 'Serviço Ativo';
-        console.log('🟢 Status definido como ATIVO');
-    } else {
-        serviceStatusIndicator.classList.remove('active');
-        serviceStatusIndicator.classList.add('inactive');
-        serviceStatusText.textContent = 'Serviço Inativo';
-        console.log('🔴 Status definido como INATIVO');
-    }
-}
 
-// Atualizar status do serviço a cada minuto
-function startServiceStatusTimer() {
-    console.log('🚀 Iniciando timer do status do serviço...');
-    checkServiceStatus(); // Verificar imediatamente
-    setInterval(checkServiceStatus, 60000); // Verificar a cada minuto
-}
 
-// Testar status imediatamente (para debug)
-setTimeout(() => {
-    console.log('🧪 Teste automático do status...');
-    checkServiceStatus();
-}, 1000);
+
+
+
 
 // Configurar opções de status
 function setupStatusOptions() {
@@ -959,3 +916,7 @@ const additionalStyles = `
 const style = document.createElement('style');
 style.textContent = additionalStyles;
 document.head.appendChild(style);
+
+// Header fixo - comportamento removido para manter sempre visível
+
+

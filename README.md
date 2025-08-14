@@ -1,40 +1,57 @@
-# 🎓 Sistema de Suporte - Secretaria de Educação de Itatiaia
+# 🚀 Mini Helpdesk - Sistema de Suporte Técnico
 
-Um sistema profissional de suporte técnico desenvolvido para a Secretaria de Educação da Prefeitura Municipal de Itatiaia, com interface moderna e funcionalidades completas para gerenciamento de chamados.
+Sistema completo de gerenciamento de chamados técnicos desenvolvido para a **Secretaria Municipal de Educação de Itatiaia**, com interface moderna e funcionalidades avançadas.
 
-> **🚀 Projeto atualizado para PostgreSQL + NeonDB + Deploy Vercel**
+## ✨ Características Principais
 
-## ✨ Funcionalidades
+### 🎯 **Funcionalidades Core**
+- ✅ **Criação de Chamados**: Sistema completo de tickets
+- ✅ **Gestão de Status**: Acompanhamento em tempo real
+- ✅ **Sistema de Logs**: Histórico completo de alterações
+- ✅ **Prioridades**: Baixa, Média, Alta e Urgente
+- ✅ **Interface Responsiva**: Desktop e Mobile
 
-- **Criar Chamados**: Formulário profissional para abertura de novos chamados de suporte
-- **Sistema de Prioridades**: Classificação por níveis (Baixa, Média, Alta, Urgente)
-- **Gerenciar Status**: Controle completo do ciclo de vida dos chamados
-- **Histórico de Atualizações**: Sistema de logs para acompanhamento completo
-- **Interface Responsiva**: Design moderno que funciona em todos os dispositivos
-- **Notificações Visuais**: Sistema de alertas profissionais
-- **API RESTful**: Backend robusto para integrações
+### 🔧 **Tecnologias Utilizadas**
+- **Backend**: Node.js + Express
+- **Banco de Dados**: PostgreSQL (NeonDB)
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Deploy**: Vercel (Serverless)
+- **Estilização**: CSS Custom Properties + Flexbox/Grid
 
-## 🎨 Identidade Visual
+### 🚀 **Recursos Avançados**
+- **Sistema de Retry**: Reconexão automática ao banco
+- **Modo Offline**: Funciona mesmo sem conexão com banco
+- **Health Check**: Monitoramento em tempo real
+- **Cache Inteligente**: Performance otimizada
+- **Logs Detalhados**: Debug e monitoramento
 
-- **Cores Institucionais**: Azul e verde da Secretaria de Educação
-- **Design Profissional**: Interface séria e adequada para ambiente corporativo
-- **Ícones FontAwesome**: Substituição de emojis por ícones profissionais
-- **Tipografia Inter**: Fonte moderna e legível
-- **Layout Responsivo**: Adaptação para desktop, tablet e mobile
+## 🏗️ Arquitetura
+
+```
+mini-helpdesk-node/
+├── 📁 public/           # Frontend (HTML, CSS, JS)
+├── 📁 node_modules/     # Dependências
+├── 🔧 server.js         # Servidor Express
+├── 🗄️ db-config.js     # Configuração do banco
+├── 📊 migrations.js     # Estrutura do banco
+├── ⚙️ package.json      # Configurações do projeto
+├── 🚀 vercel.json       # Configuração do Vercel
+└── 📚 README.md         # Documentação
+```
 
 ## 🚀 Como Executar
 
-### Pré-requisitos
-- Node.js (versão 14 ou superior)
-- npm ou yarn
-- Conta no NeonDB (para PostgreSQL)
+### **Pré-requisitos**
+- Node.js 16+ 
+- PostgreSQL (NeonDB recomendado)
+- Conta no Vercel (para deploy)
 
-### Instalação
+### **Instalação Local**
 
 1. **Clone o repositório**
 ```bash
-git clone https://github.com/RodriguesRhuan10/SME-Suporte.git
-cd SME-Suporte
+git clone https://github.com/seu-usuario/mini-helpdesk-node.git
+cd mini-helpdesk-node
 ```
 
 2. **Instale as dependências**
@@ -42,196 +59,181 @@ cd SME-Suporte
 npm install
 ```
 
-3. **Execute o projeto**
+3. **Configure as variáveis de ambiente**
 ```bash
-# Modo desenvolvimento (com auto-reload)
-npm run dev
+# Crie um arquivo .env
+DATABASE_URL=sua_url_do_neondb
+NODE_ENV=development
+```
 
-# Modo produção
+4. **Execute o projeto**
+```bash
 npm start
 ```
 
-4. **Configure o banco de dados**
+5. **Acesse a aplicação**
+```
+http://localhost:3000
+```
+
+### **Deploy no Vercel**
+
+1. **Configure as variáveis de ambiente**
 ```bash
-# Crie um arquivo .env com suas configurações do NeonDB
-cp env.example .env
-# Edite o .env com sua DATABASE_URL do NeonDB
+DATABASE_URL=sua_url_do_neondb
+NODE_ENV=production
 ```
 
-5. **Execute as migrações**
-```bash
-npm run db:migrate
-```
-
-6. **Acesse a aplicação**
-```
-http://localhost:3000 (ou porta disponível)
-```
-
-## 🛠️ Tecnologias Utilizadas
-
-- **Backend**: Node.js + Express
-- **Banco de Dados**: PostgreSQL (NeonDB)
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Ícones**: FontAwesome 6.0
-- **Tipografia**: Google Fonts (Inter)
-- **Middleware**: CORS, Body-parser
-- **Desenvolvimento**: Nodemon
-
-## 📁 Estrutura do Projeto
-
-```
-SME-Suporte/
-├── server.js          # Servidor Express principal
-├── db-config.js       # Configuração do PostgreSQL/NeonDB
-├── migrations.js      # Migrações do banco de dados
-├── package.json       # Dependências e scripts
-├── public/            # Arquivos estáticos
-│   ├── index.html     # Interface principal
-│   ├── style.css      # Estilos CSS profissionais
-│   └── script.js      # Lógica do frontend
-├── vercel.json        # Configuração para deploy na Vercel
-├── env.example        # Exemplo de variáveis de ambiente
-├── SETUP-NEONDB.md    # Guia de configuração do NeonDB
-└── README.md          # Documentação
-```
-
-## 🔧 API Endpoints
-
-### Chamados
-- `POST /api/tickets` - Criar novo chamado
-- `GET /api/tickets` - Listar todos os chamados
-- `GET /api/tickets/:id` - Obter chamado específico
-- `PUT /api/tickets/:id/status` - Atualizar status do chamado
-
-### Logs
-- `POST /api/tickets/:id/logs` - Adicionar comentário/log
-- `GET /api/tickets/:id/logs` - Obter histórico de um chamado
-
-### Sistema
-- `GET /api/health` - Status da API e banco de dados
-
-## 💾 Banco de Dados
-
-O sistema utiliza PostgreSQL (NeonDB) com duas tabelas principais:
-
-### Tabela `tickets`
-- `id`: Identificador único (SERIAL)
-- `title`: Assunto do chamado (VARCHAR)
-- `description`: Descrição detalhada (TEXT)
-- `requester`: Nome e função do solicitante (VARCHAR)
-- `priority`: Prioridade (baixa, media, alta, urgente)
-- `status`: Status atual (aberto, em_andamento, resolvido, fechado)
-- `created_at`: Data de criação (TIMESTAMP)
-
-### Tabela `logs`
-- `id`: Identificador único (SERIAL)
-- `ticket_id`: Referência ao chamado (INTEGER, FOREIGN KEY)
-- `message`: Comentário ou atualização (TEXT)
-- `created_at`: Data de criação (TIMESTAMP)
-
-## 🎯 Fluxo de Trabalho
-
-1. **Abertura**: Usuário preenche formulário com dados do chamado
-2. **Classificação**: Sistema define prioridade automaticamente (padrão: média)
-3. **Acompanhamento**: Visualização detalhada e histórico completo
-4. **Atualização**: Alteração de status conforme progresso
-5. **Comentários**: Adição de logs para documentar ações
-6. **Resolução**: Marcação como resolvido ou fechado
-
-## 🎨 Características da Interface
-
-- **Header Institucional**: Logo e informações da Secretaria de Educação
-- **Formulário Profissional**: Campos organizados e validação
-- **Cards de Chamados**: Visualização clara e organizada
-- **Modal Detalhado**: Informações completas e controles
-- **Sistema de Cores**: Identidade visual consistente
-- **Responsividade**: Adaptação para todos os dispositivos
-
-## 🚨 Solução de Problemas
-
-### Erro de Banco de Dados
-O sistema cria automaticamente o diretório `db/` e arquivo do banco se não existirem.
-
-### Persistência de Dados
-✅ **Dados são mantidos** entre reinicializações do servidor  
-✅ **Backup automático** após cada operação importante  
-✅ **Verificação de integridade** do banco de dados  
-✅ **Migração automática** de estrutura se necessário  
-
-### Sistema de Banco de Dados
-O sistema utiliza PostgreSQL via NeonDB:
-- **Provedor**: NeonDB (PostgreSQL serverless)
-- **Conexão**: Pool de conexões otimizado
-- **SSL**: Habilitado para produção
-- **Índices**: Otimizados para performance
-
-### Comandos de Banco de Dados
-```bash
-# Executar migrações
-npm run db:migrate
-
-# Verificar informações do banco
-npm run db:info
-```
-
-### Porta em Uso
-O sistema detecta automaticamente portas disponíveis, começando pela 3000.
-
-### Dependências
-Se houver problemas com dependências:
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-## 🚀 Deploy na Vercel
-
-### 1. **Configurar NeonDB**
-- Crie uma conta em [neon.tech](https://neon.tech)
-- Crie um novo projeto
-- Copie a string de conexão (DATABASE_URL)
-
-### 2. **Configurar Vercel**
-- Instale o Vercel CLI: `npm i -g vercel`
-- Faça login: `vercel login`
-- Configure as variáveis de ambiente:
-```bash
-vercel env add DATABASE_URL
-# Cole sua string de conexão do NeonDB
-```
-
-### 3. **Deploy**
+2. **Deploy automático**
 ```bash
 vercel --prod
 ```
 
-## 📝 Próximas Melhorias
+## 🗄️ Configuração do Banco
 
-- [ ] Sistema de usuários e autenticação
-- [ ] Filtros e busca avançada por prioridade/status
-- [ ] Paginação de resultados
-- [ ] Categorias de chamados
-- [ ] Sistema de notificações por email
-- [ ] Relatórios e estatísticas
-- [ ] Dashboard administrativo
-- [ ] API de webhooks
-- [ ] Sistema de anexos
+### **NeonDB (Recomendado)**
+1. Crie uma conta em [neon.tech](https://neon.tech)
+2. Crie um novo projeto
+3. Copie a string de conexão
+4. Configure como `DATABASE_URL`
+
+### **Estrutura das Tabelas**
+```sql
+-- Tabela de tickets
+CREATE TABLE tickets (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    requester VARCHAR(255),
+    priority VARCHAR(20) DEFAULT 'media',
+    status VARCHAR(20) DEFAULT 'aberto',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de logs
+CREATE TABLE logs (
+    id SERIAL PRIMARY KEY,
+    ticket_id INTEGER REFERENCES tickets(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## 🔧 API Endpoints
+
+### **Tickets**
+- `GET /api/tickets` - Listar todos os tickets
+- `POST /api/tickets` - Criar novo ticket
+- `GET /api/tickets/:id` - Obter ticket específico
+- `PUT /api/tickets/:id/status` - Atualizar status
+- `DELETE /api/tickets/:id` - Excluir ticket
+
+### **Logs**
+- `GET /api/tickets/:id/logs` - Obter logs de um ticket
+- `POST /api/tickets/:id/logs` - Adicionar log
+
+### **Sistema**
+- `GET /api/health` - Status da API e banco
+
+## 🎨 Interface
+
+### **Header Inteligente**
+- **Suporte Online**: Status sempre ativo (verde)
+- **Design Responsivo**: Desktop e Mobile
+- **Cores Institucionais**: Verde da Secretaria de Educação
+
+### **Formulário de Chamados**
+- Campos obrigatórios e opcionais
+- Validação em tempo real
+- Seleção de prioridade
+- Descrição detalhada
+
+### **Lista de Tickets**
+- Filtros por status
+- Ordenação por data
+- Visualização em cards
+- Modal de detalhes
+
+## 🔒 Segurança
+
+- **Senha de Acesso**: Configurável via variável de ambiente
+- **Validação de Dados**: Input sanitizado
+- **CORS Configurado**: Acesso controlado
+- **SSL Forçado**: Conexões seguras
+
+## 📱 Responsividade
+
+- **Desktop**: Layout completo com sidebar
+- **Tablet**: Adaptação automática
+- **Mobile**: Interface otimizada para touch
+- **Breakpoints**: 768px, 480px, 360px
+
+## 🚀 Performance
+
+- **Cache Inteligente**: Arquivos estáticos otimizados
+- **Lazy Loading**: Carregamento sob demanda
+- **Compressão**: Gzip automático
+- **CDN Ready**: Preparado para Vercel
+
+## 🐛 Troubleshooting
+
+### **Problemas Comuns**
+
+1. **Erro de Conexão com Banco**
+   - Verifique a `DATABASE_URL`
+   - Confirme se o NeonDB está ativo
+   - Teste a conectividade
+
+2. **Timeout no Vercel**
+   - Verifique o arquivo `vercel.json`
+   - Configure `maxDuration` adequado
+   - Monitore os logs
+
+3. **Erro de Migração**
+   - Execute `npm run db:migrate`
+   - Verifique as permissões do banco
+   - Confirme a estrutura das tabelas
+
+### **Logs de Debug**
+```bash
+# Verificar status do banco
+npm run db:info
+
+# Testar conexão
+npm run db:test
+
+# Ver logs em tempo real
+npm start
+```
 
 ## 🤝 Contribuição
 
-Contribuições são bem-vindas! Sinta-se à vontade para:
-- Reportar bugs
-- Sugerir novas funcionalidades
-- Enviar pull requests
-- Melhorar a documentação
+1. Fork o projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
+5. Abra um Pull Request
 
 ## 📄 Licença
 
-Este projeto está sob licença MIT. Veja o arquivo LICENSE para mais detalhes.
+Este projeto é desenvolvido para uso interno da **Secretaria Municipal de Educação de Itatiaia**.
+
+## 👨‍💻 Desenvolvimento
+
+**Setor de Informática - SME Itatiaia**
+- **Ano**: 2025
+- **Versão**: 2.0.0
+- **Status**: Produção
+
+## 🔗 Links Úteis
+
+- **Aplicação**: [URL do Vercel]
+- **Documentação**: [Este README]
+- **Issues**: [GitHub Issues]
+- **Suporte**: [Contato da SME]
 
 ---
 
-**Desenvolvido para a Secretaria de Educação de Itatiaia - Prefeitura Municipal de Itatiaia**
-
-**Tecnologias**: Node.js, Express, SQLite, HTML5, CSS3, JavaScript ES6+
+<div align="center">
+  <strong>🚀 Sistema desenvolvido com ❤️ pela SME Itatiaia</strong>
+</div>
