@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Suporte - Secretaria de Educação de Itatiaia</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="img/SMEIta.webp">
+    <link rel="icon" type="image/x-icon" href="img/SMEIta.webp">
+    <link rel="shortcut icon" href="img/SMEIta.webp">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Institucional -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <img src="img/SME3Ita.webp" alt="Secretaria Municipal de Educação de Itatiaia" class="logo-image">
+                    </div>
+                    <div class="institution-info">
+                        <h1>Secretaria Municipal de Educação</h1>
+                        <h2>Prefeitura de Itatiaia</h2>
+                        <p>Sistema de Suporte e Atendimento - SME</p>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="system-info">
+                        <span class="status-indicator">
+                            <i class="fas fa-circle"></i>
+                            Suporte Online
+                        </span>
+                        <span class="service-status-indicator" id="serviceStatusIndicator">
+                            <i class="fas fa-circle" id="serviceStatusIcon"></i>
+                            <span id="serviceStatusText">Serviço Ativo</span>
+                        </span>
+                    </div>
+                    <div class="developer-credit">
+                        <span class="credit-text">
+                            Desenvolvido por Setor de Informática ~ SME Itatiaia 2025
+                        </span>
+                        <span class="copyright">©</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- Form Section -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-plus-circle"></i> Abrir Novo Chamado</h2>
+                        <p>Preencha os dados para solicitar suporte técnico</p>
+                    </div>
+                    
+                    <form id="ticketForm" class="ticket-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="title">
+                                    <i class="fas fa-heading"></i>
+                                    Assunto do Chamado
+                                </label>
+                                <input type="text" id="title" name="title" placeholder="Descreva brevemente o problema" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="requester">
+                                    <i class="fas fa-user"></i>
+                                    Solicitante
+                                </label>
+                                <input type="text" id="requester" name="requester" placeholder="Nome, função e escola">
+                            </div>
+                            <div class="form-group">
+                                <label for="priority">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Prioridade
+                                </label>
+                                <select id="priority" name="priority">
+                                    <option value="baixa">Baixa</option>
+                                    <option value="media" selected>Média</option>
+                                    <option value="alta">Alta</option>
+                                    <option value="urgente">Urgente</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="description">
+                                    <i class="fas fa-align-left"></i>
+                                    Descrição Detalhada
+                                </label>
+                                <textarea id="description" name="description" placeholder="Descreva detalhadamente o problema, para análise e solução" required></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                                Enviar Chamado
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Tickets Section -->
+                <section class="tickets-section" id="ticketsSection" style="display: none;">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tasks"></i> Chamados em Andamento</h2>
+                        <div class="section-actions">
+                            <div class="filter-buttons">
+                                <button class="filter-btn active" data-status="todos" onclick="filterTickets('todos')">
+                                    <i class="fas fa-list"></i>
+                                    Todos
+                                </button>
+                                <button class="filter-btn" data-status="aberto" onclick="filterTickets('aberto')">
+                                    <i class="fas fa-folder-open"></i>
+                                    Aberto
+                                </button>
+                                <button class="filter-btn" data-status="em_andamento" onclick="filterTickets('em_andamento')">
+                                    <i class="fas fa-search"></i>
+                                    Em Análise
+                                </button>
+                                <button class="filter-btn" data-status="resolvido" onclick="filterTickets('resolvido')">
+                                    <i class="fas fa-check-circle"></i>
+                                    Resolvido
+                                </button>
+                                <button class="filter-btn" data-status="fechado" onclick="filterTickets('fechado')">
+                                    <i class="fas fa-times-circle"></i>
+                                    Fechado
+                                </button>
+                            </div>
+                            <button class="btn-secondary" onclick="refreshTickets()">
+                                <i class="fas fa-sync-alt"></i>
+                                Atualizar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="tickets" class="tickets-grid"></div>
+                </section>
+
+                <!-- Seção de Acesso aos Chamados -->
+                <section class="access-section" id="accessSection">
+                    <div class="access-container">
+                        <div class="access-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h2>Acesso aos Chamados</h2>
+                        <p>Para visualizar os chamados, é necessário inserir a senha de acesso.</p>
+                        <button class="btn-primary access-btn" onclick="showPasswordModal()">
+                            <i class="fas fa-eye"></i>
+                            Ver Chamados
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Modal de Senha -->
+                <div id="passwordModal" class="modal password-modal">
+                    <div class="modal-content password-modal-content">
+                        <div class="modal-header">
+                            <h3><i class="fas fa-lock"></i> Acesso aos Chamados</h3>
+                            <span class="close" onclick="closePasswordModal()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="password-form">
+                                <div class="form-group">
+                                    <label for="accessPassword">
+                                        <i class="fas fa-key"></i>
+                                        Senha de Acesso
+                                    </label>
+                                    <input 
+                                        type="password" 
+                                        id="accessPassword" 
+                                        placeholder="Digite a senha de acesso"
+                                        onkeypress="handlePasswordKeyPress(event)"
+                                    >
+                                </div>
+                                <div class="password-actions">
+                                    <button class="btn-primary" onclick="verifyPassword()">
+                                        <i class="fas fa-unlock"></i>
+                                        Acessar
+                                    </button>
+                                    <button class="btn-secondary" onclick="closePasswordModal()">
+                                        <i class="fas fa-times"></i>
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modal de Detalhes -->
+        <div class="modal" id="ticketModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-content">
+                        <div class="modal-title-section">
+                            <div class="modal-logo">
+                                <img src="img/SMEIta2.png" alt="Secretaria de Educação de Itatiaia" class="modal-logo-image">
+                            </div>
+                            <div class="modal-title-info">
+                                <h3><i class="fas fa-file-alt"></i> Detalhes do Chamado</h3>
+                                <p class="modal-subtitle">Secretaria de Educação - Prefeitura Municipal de Itatiaia</p>
+                            </div>
+                        </div>
+                        <button class="close" onclick="closeModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-body">
+                    <div id="ticketDetails" class="ticket-details"></div>
+                    
+                    <div class="logs-section">
+                        <div class="section-header-inline">
+                            <h4><i class="fas fa-history"></i> Histórico de Atualizações</h4>
+                            <div class="logs-count">
+                                <span class="logs-badge">0 comentários</span>
+                            </div>
+                        </div>
+                        <form id="logForm" class="log-form">
+                            <div class="log-input-group">
+                                <div class="log-input-wrapper">
+                                    <label for="logMessage">Adicionar Comentário:</label>
+                                    <textarea id="logMessage" placeholder="Descreva a atualização, ação realizada ou observação sobre este chamado..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                    Adicionar Comentário
+                                </button>
+                            </div>
+                        </form>
+                        <div id="logsList" class="logs-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Alteração de Status -->
+        <div class="modal" id="statusModal">
+            <div class="modal-content status-modal">
+                <div class="modal-header">
+                    <div class="modal-header-content">
+                        <div class="modal-title-section">
+                            <div class="modal-logo">
+                                <img src="img/SMEIta.webp" alt="Secretaria de Educação de Itatiaia" class="modal-logo-image">
+                            </div>
+                            <div class="modal-title-info">
+                                <h3><i class="fas fa-edit"></i> Alterar Status do Chamado</h3>
+                                <p class="modal-subtitle">Selecione o novo status para este chamado</p>
+                            </div>
+                        </div>
+                        <button class="close" onclick="closeStatusModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="status-selection">
+                        <div class="current-status-display">
+                            <h4>Status Atual:</h4>
+                            <div class="current-status-badge" id="currentStatusBadge">
+                                <span class="status-text">Aberto</span>
+                            </div>
+                        </div>
+                        
+                        <div class="status-options">
+                            <h4>Selecione o Novo Status:</h4>
+                            <div class="status-options-grid">
+                                <div class="status-option" data-status="aberto">
+                                    <div class="status-option-icon">
+                                        <i class="fas fa-folder-open"></i>
+                                    </div>
+                                    <div class="status-option-content">
+                                        <span class="status-option-title">Aberto</span>
+                                        <span class="status-option-description">Chamado enviado para o Setor de Informática</span>
+                                    </div>
+                                    <div class="status-option-radio">
+                                        <input type="radio" name="newStatus" value="aberto" id="status-aberto">
+                                        <label for="status-aberto"></label>
+                                    </div>
+                                </div>
+                                
+                                <div class="status-option" data-status="em_andamento">
+                                    <div class="status-option-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <div class="status-option-content">
+                                        <span class="status-option-title">Em Análise</span>
+                                        <span class="status-option-description">O Setor de Informática está analisando o chamado</span>
+                                    </div>
+                                    <div class="status-option-radio">
+                                        <input type="radio" name="newStatus" value="em_andamento" id="status-em-andamento">
+                                        <label for="status-em-andamento"></label>
+                                    </div>
+                                </div>
+                                
+                                <div class="status-option" data-status="resolvido">
+                                    <div class="status-option-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="status-option-content">
+                                        <span class="status-option-title">Resolvido</span>
+                                        <span class="status-option-description">O Setor de Informática solucionou o problema</span>
+                                    </div>
+                                    <div class="status-option-radio">
+                                        <input type="radio" name="newStatus" value="resolvido" id="status-resolvido">
+                                        <label for="status-resolvido"></label>
+                                    </div>
+                                </div>
+                                
+                                <div class="status-option" data-status="fechado">
+                                    <div class="status-option-icon">
+                                        <i class="fas fa-times-circle"></i>
+                                    </div>
+                                    <div class="status-option-content">
+                                        <span class="status-option-title">Fechado</span>
+                                        <span class="status-option-description">O Setor de Informática fechou o chamado</span>
+                                    </div>
+                                    <div class="status-option-radio">
+                                        <input type="radio" name="newStatus" value="fechado" id="status-fechado">
+                                        <label for="status-fechado"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-actions">
+                            <button type="button" class="btn-secondary" onclick="closeStatusModal()">
+                                <i class="fas fa-times"></i>
+                                Cancelar
+                            </button>
+                            <button type="button" class="btn-primary" onclick="confirmStatusChange()">
+                                <i class="fas fa-check"></i>
+                                Confirmar Alteração
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                <!-- Modal de Confirmação de Exclusão -->
+                <div id="deleteConfirmModal" class="modal delete-confirm-modal">
+                    <div class="modal-content delete-confirm-content">
+                        <div class="modal-header delete-confirm-header">
+                            <div class="delete-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h3>Confirmar Exclusão</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="delete-message">
+                                <p class="delete-warning">Tem certeza que deseja excluir este chamado?</p>
+                                <p class="delete-description">Esta ação não pode ser desfeita e todos os dados relacionados serão perdidos permanentemente.</p>
+                            </div>
+                            <div class="delete-actions">
+                                <button class="btn-secondary" onclick="closeDeleteConfirmModal()">
+                                    <i class="fas fa-times"></i>
+                                    Cancelar
+                                </button>
+                                <button class="btn-danger" onclick="confirmDeleteTicket()">
+                                    <i class="fas fa-trash"></i>
+                                    Confirmar Exclusão
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </div>
+
+<script src="script.js"></script>
+</body>
+</html>
