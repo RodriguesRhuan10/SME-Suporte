@@ -4,9 +4,34 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const net = require('net');
 
 // Criar instância do Express
 const app = express();
+
+// Função para verificar se uma porta está disponível
+function isPortAvailable(port) {
+    return new Promise((resolve) => {
+        const server = net.createServer();
+        server.listen(port, () => {
+            server.once('close', () => resolve(true));
+            server.close();
+        });
+        server.on('error', () => resolve(false));
+    });
+}
+
+// Função para encontrar uma porta disponível
+async function findAvailablePort(startPort) {
+    let port = startPort;
+    while (!(await isPortAvailable(port))) {
+        port++;
+        if (port > startPort + 100) {
+            throw new Error('Não foi possível encontrar uma porta disponível');
+        }
+    }
+    return port;
+}
 
 // Importar e executar migrações
 const { createTables, checkTables } = require('./migrations');
@@ -48,14 +73,8 @@ app.use('/api', (req, res, next) => {
         return next(); // Permitir acesso ao health check
     }
     
-    if (!isDatabaseConnected) {
-        return res.status(503).json({ 
-            error: 'Serviço temporariamente indisponível', 
-            message: 'Banco de dados não está conectado',
-            retryAfter: 30
-        });
-    }
-    
+    // Permitir que as APIs funcionem mesmo sem banco conectado
+    // O erro será tratado individualmente em cada rota
     next();
 });
 
@@ -93,6 +112,14 @@ initializeDatabase().then(success => {
 
 // Criar ticket
 app.post('/api/tickets', async (req, res) => {
+    // Verificar se o banco está conectado
+    if (!isDatabaseConnected) {
+        return res.status(503).json({ 
+            error: 'Serviço temporariamente indisponível', 
+            message: 'Banco de dados não está conectado'
+        });
+    }
+    
     const { title, description, requester, priority } = req.body;
     
     // Validação básica
@@ -128,6 +155,14 @@ app.post('/api/tickets', async (req, res) => {
 
 // Listar tickets
 app.get('/api/tickets', async (req, res) => {
+    // Verificar se o banco está conectado
+    if (!isDatabaseConnected) {
+        return res.status(503).json({ 
+            error: 'Serviço temporariamente indisponível', 
+            message: 'Banco de dados não está conectado'
+        });
+    }
+    
     try {
         const result = await executeQuery(
             `SELECT * FROM tickets ORDER BY created_at DESC`
@@ -141,6 +176,14 @@ app.get('/api/tickets', async (req, res) => {
 
 // Obter ticket por ID
 app.get('/api/tickets/:id', async (req, res) => {
+    // Verificar se o banco está conectado
+    if (!isDatabaseConnected) {
+        return res.status(503).json({ 
+            error: 'Serviço temporariamente indisponível', 
+            message: 'Banco de dados não está conectado'
+        });
+    }
+    
     const ticketId = req.params.id;
     if (!ticketId || isNaN(ticketId)) {
         return res.status(400).json({ error: 'ID do ticket inválido' });
@@ -165,6 +208,14 @@ app.get('/api/tickets/:id', async (req, res) => {
 
 // Adicionar log
 app.post('/api/tickets/:id/logs', async (req, res) => {
+    // Verificar se o banco está conectado
+    if (!isDatabaseConnected) {
+        return res.status(503).json({ 
+            error: 'Serviço temporariamente indisponível', 
+            message: 'Banco de dados não está conectado'
+        });
+    }
+    
     const ticketId = req.params.id;
     const { message } = req.body;
     
@@ -191,6 +242,14 @@ app.post('/api/tickets/:id/logs', async (req, res) => {
 
 // Obter logs de um ticket
 app.get('/api/tickets/:id/logs', async (req, res) => {
+    // Verificar se o banco está conectado
+    if (!isDatabaseConnected) {
+        return res.status(503).json({ 
+            error: 'Serviço temporariamente indisponível', 
+            message: 'Banco de dados não está conectado'
+        });
+    }
+    
     const ticketId = req.params.id;
     
     if (!ticketId || isNaN(ticketId)) {
@@ -212,6 +271,14 @@ app.get('/api/tickets/:id/logs', async (req, res) => {
 
 // Atualizar status
 app.put('/api/tickets/:id/status', async (req, res) => {
+    // Verificar se o banco está conectado
+    if (!isDatabaseConnected) {
+        return res.status(503).json({ 
+            error: 'Serviço temporariamente indisponível', 
+            message: 'Banco de dados não está conectado'
+        });
+    }
+    
     const ticketId = req.params.id;
     const { status } = req.body;
     
@@ -253,6 +320,14 @@ app.put('/api/tickets/:id/status', async (req, res) => {
 
 // Rota para excluir um ticket
 app.delete('/api/tickets/:id', async (req, res) => {
+    // Verificar se o banco está conectado
+    if (!isDatabaseConnected) {
+        return res.status(503).json({ 
+            error: 'Serviço temporariamente indisponível', 
+            message: 'Banco de dados não está conectado'
+        });
+    }
+    
     const ticketId = req.params.id;
     
     try {
@@ -299,16 +374,32 @@ app.get('/api/health', (req, res) => {
 // Iniciar servidor
 async function startServer() {
     try {
-        // No Vercel, não precisamos iniciar o servidor manualmente
-        // Apenas inicializar o banco de dados
+        // Inicializar banco de dados primeiro
         await initializeDatabase();
         
-        console.log('🚀 Aplicação inicializada com sucesso!');
-        console.log('📊 Banco de dados: PostgreSQL (NeonDB)');
-        console.log('✨ Sistema pronto para uso no Vercel!');
+        // Verificar se estamos no Vercel ou localmente
+        if (process.env.VERCEL) {
+            // No Vercel, não precisamos iniciar o servidor manualmente
+            console.log('🚀 Aplicação inicializada com sucesso no Vercel!');
+            console.log('📊 Banco de dados: PostgreSQL (NeonDB)');
+            console.log('✨ Sistema pronto para uso!');
+        } else {
+            // Localmente, iniciar o servidor
+            const PORT = await findAvailablePort(3000);
+            
+            app.listen(PORT, () => {
+                console.log('🚀 Servidor iniciado com sucesso!');
+                console.log(`📍 Acesse: http://localhost:${PORT}`);
+                console.log(`🔧 API Health: http://localhost:${PORT}/api/health`);
+                console.log('📊 Banco de dados: PostgreSQL (NeonDB)');
+                console.log('✨ Sistema pronto para uso local!');
+            });
+        }
     } catch (error) {
         console.error('❌ Erro ao inicializar aplicação:', error.message);
-        // Não encerrar o processo no Vercel
+        if (!process.env.VERCEL) {
+            process.exit(1);
+        }
     }
 }
 
