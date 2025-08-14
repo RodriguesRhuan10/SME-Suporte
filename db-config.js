@@ -9,17 +9,12 @@ const pool = new Pool({
         sslmode: 'require'
     },
     // Configurações otimizadas para Vercel
-    max: 2, // Reduzir para Vercel (limite de conexões)
+    max: 1, // Reduzir para Vercel (limite de conexões)
     min: 0, // Não manter conexões mínimas
-    idleTimeoutMillis: 5000, // Timeout reduzido para Vercel
-    connectionTimeoutMillis: 15000, // Timeout de conexão aumentado
-    query_timeout: 30000, // Timeout para queries
-    statement_timeout: 30000, // Timeout para statements
+    idleTimeoutMillis: 3000, // Timeout reduzido para Vercel
+    connectionTimeoutMillis: 10000, // Timeout de conexão reduzido
     // Configurações específicas para NeonDB
-    application_name: 'helpdesk-app-vercel',
-    // Configurações de retry
-    retryDelay: 1000,
-    maxRetries: 3
+    application_name: 'helpdesk-app-vercel'
 });
 
 // Testar conexão
@@ -33,7 +28,7 @@ pool.on('error', (err) => {
 });
 
 // Função para testar conexão com retry
-async function testConnection(retries = 3) {
+async function testConnection(retries = 2) {
     console.log(`🔍 Testando conexão com o banco de dados (${retries} tentativas)...`);
     
     for (let i = 0; i < retries; i++) {
@@ -46,7 +41,7 @@ async function testConnection(retries = 3) {
         } catch (error) {
             console.error(`❌ Tentativa ${i + 1}/${retries} falhou:`, error.message);
             if (i < retries - 1) {
-                const delay = 1000 * (i + 1);
+                const delay = 500 * (i + 1);
                 console.log(`⏳ Aguardando ${delay}ms antes da próxima tentativa...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
@@ -58,7 +53,7 @@ async function testConnection(retries = 3) {
 }
 
 // Função para executar query com retry
-async function executeQuery(query, params = [], retries = 3) {
+async function executeQuery(query, params = [], retries = 2) {
     for (let i = 0; i < retries; i++) {
         try {
             console.log(`🔍 Executando query (tentativa ${i + 1}/${retries})`);
@@ -68,8 +63,9 @@ async function executeQuery(query, params = [], retries = 3) {
         } catch (error) {
             console.error(`❌ Query falhou (tentativa ${i + 1}/${retries}):`, error.message);
             if (i < retries - 1) {
-                console.log(`⏳ Aguardando ${1000 * (i + 1)}ms antes da próxima tentativa...`);
-                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+                const delay = 500 * (i + 1);
+                console.log(`⏳ Aguardando ${delay}ms antes da próxima tentativa...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
             } else {
                 console.error(`💥 Todas as tentativas falharam. Último erro:`, error.message);
                 throw error;

@@ -397,9 +397,7 @@ async function startServer() {
         }
     } catch (error) {
         console.error('❌ Erro ao inicializar aplicação:', error.message);
-        if (!process.env.VERCEL) {
-            process.exit(1);
-        }
+        // Não encerrar o processo no Vercel
     }
 }
 
